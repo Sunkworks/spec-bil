@@ -13,14 +13,14 @@ void Motor::setup(){
 
 void Motor::updateMotors(){
     if (_direction == FORWARD){
-        analogWrite(reversePin, 0);
+        digitalWrite(reversePin, LOW);
         analogWrite(forwardPin, _speed);
     } else if (_direction == REVERSE){
-        analogWrite(forwardPin, 0);
+        digitalWrite(forwardPin, LOW);
         analogWrite(reversePin, _speed);
     } else if (_direction == STOP){
-        analogWrite(forwardPin, 0);
-        analogWrite(reversePin, 0);
+        digitalWrite(forwardPin, LOW);
+        digitalWrite(reversePin, LOW);
     }
 }
 

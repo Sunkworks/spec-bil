@@ -22,14 +22,14 @@ class Motor {
   }
   void updateMotors(){
     if (_direction == FORWARD){
-        analogWrite(reversePin, 0);
-        analogWrite(forwardPin, _speed);
+        digitalWrite(reversePin, LOW);
+        digitalWrite(forwardPin, HIGH);
     } else if (_direction == REVERSE){
-        analogWrite(forwardPin, 0);
-        analogWrite(reversePin, _speed);
+        digitalWrite(forwardPin, LOW);
+        digitalWrite(reversePin, HIGH);
     } else if (_direction == STOP){
-        analogWrite(forwardPin, 0);
-        analogWrite(reversePin, 0);
+        digitalWrite(forwardPin, LOW);
+        digitalWrite(reversePin, LOW);
     }
   }
   
@@ -52,7 +52,7 @@ class Motor {
 
 
 Motor right_motor(11, 10);
-Motor left_motor(5, 6);
+Motor left_motor(9, 3);
 void setup(){
   left_motor.setup();
   right_motor.setup();
@@ -63,13 +63,15 @@ void setup(){
 
 void loop() {
   left_motor.setSpeed(255);
-  right_motor.setSpeed(255);
+  right_motor.setSpeed(0);
   right_motor.setDirection(FORWARD);
   left_motor.setDirection(FORWARD);
   delay(3000);
   while (1 == 1){
     left_motor.setSpeed(0);
     right_motor.setSpeed(0);
+    right_motor.setDirection(STOP);
+    left_motor.setDirection(STOP);
     delay(1000);
   }
   while (0 == 1){

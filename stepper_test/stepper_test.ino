@@ -26,66 +26,38 @@
 const int stepsPerRevolution = 200;  // change this to fit the number of steps per revolution
 // for your motor
 
-enum Direction {
-  FORWARD = 1,
-  STOP = 0,
-  REVERSE = -1,
-}
-
-
-class Motor{
-  private:
-    AccelStepper _leftStepper(AccelStepper::FULL4WIRE, 8, 9, 10, 11);
-    AccelStepper _rightStepper(AccelStepper::FULL4WIRE, 4, 5, 6, 7);
-    int _max_speed;
-    int _speed;
-    int _left_direction;
-    int _right_direction;
-
-  public:
-    Motor(int max_speed) : _max_speed(max_speed) _speed(0){
-        _leftStepper.setMaxSpeed(_max_speed);
-        _leftStepper.setMaxSpeed(_max_speed);
-      }
-    void setup(); 
-    void updateMotors(){ // has to be run every now and then
-      _leftStepper.runSpeed();
-      _rightStepper.runSpeed();
-
-    }
-    
-    void setSpeed(int new_speed){
-      _leftStepper.setSpeed(new_speed * _left_direction);
-      _rightStepper.setSpeed(new_speed * _right_direction);
-    }
-
-    void setLeftDirection(int new_direction){
-      _left_direction = new_direction;
-    }
-    
-    void setRightDirection(int new_direction){
-      _right_direction = new_direction;
-    }
-  
-}
-
-
+AccelStepper leftStepper(AccelStepper::FULL4WIRE, 8, 9, 10, 11);
+AccelStepper rightStepper(AccelStepper::FULL4WIRE, 4, 5, 6, 7);
 
 // initialize the stepper library on pins 8 through 11:
 
 
-int stepCount = 0;         // number of steps the motor has taken
+int stepCount = 95;         // number of steps the motor has taken
+int moveSpeed = 50;
 
 void setup() {
   // initialize the serial port:
   Serial.begin(9600);
   leftStepper.setMaxSpeed(250);
-  leftStepper.setSpeed(100);
+//  leftStepper.setAcceleration(100);
+  rightStepper.setMaxSpeed(250);
+//  rightStepper.setAcceleration(100);
 }
 
 void loop() {
   // step one step:
-  leftStepper.runSpeed();
+  if (leftStepper.distanceToGo() == 0){
+    leftStepper.disableOutputs();   
+  }
+  if (rightStepper.distanceToGo() == 0){
+    rightStepper.disableOutputs();   
+  }
+  leftStepper.moveTo(stepCount);
+  rightStepper.moveTo(-stepCount);
+  leftStepper.setSpeed(moveSpeed);
+  rightStepper.setSpeed(moveSpeed);
+  leftStepper.runSpeedToPosition();
+  rightStepper.runSpeedToPosition();
   //leftStepper.step(1);
   //rightStepper.step(1);
   //Serial.print("steps:");

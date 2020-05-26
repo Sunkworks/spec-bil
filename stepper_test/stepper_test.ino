@@ -26,42 +26,53 @@
 const int stepsPerRevolution = 200;  // change this to fit the number of steps per revolution
 // for your motor
 
-AccelStepper leftStepper(AccelStepper::FULL4WIRE, 8, 9, 10, 11);
-AccelStepper rightStepper(AccelStepper::FULL4WIRE, 4, 5, 6, 7);
-
 // initialize the stepper library on pins 8 through 11:
 
 
-int stepCount = 95;         // number of steps the motor has taken
+int stepCount = 107;         // number of steps the motor has taken
 int moveSpeed = 50;
+
+const int navSpeed = 50;
+const int TURN_STEP_COUNT = 107;
+AccelStepper leftMotor(AccelStepper::FULL4WIRE, 8, 9, 10, 11);
+AccelStepper rightMotor(AccelStepper::FULL4WIRE, 5, 4, 6, 7);
 
 void setup() {
   // initialize the serial port:
   Serial.begin(9600);
-  leftStepper.setMaxSpeed(250);
+  leftMotor.setMaxSpeed(250);
 //  leftStepper.setAcceleration(100);
-  rightStepper.setMaxSpeed(250);
+  rightMotor.setMaxSpeed(250);
 //  rightStepper.setAcceleration(100);
 }
 
 void loop() {
   // step one step:
-  if (leftStepper.distanceToGo() == 0){
-    leftStepper.disableOutputs();   
+  leftMotor.setSpeed(navSpeed);
+  rightMotor.setSpeed(navSpeed);
+  for (int i = 0; i < 10000; i++){
+    leftMotor.runSpeed();
+    rightMotor.runSpeed();
+    delayMicroseconds(100);  
   }
-  if (rightStepper.distanceToGo() == 0){
-    rightStepper.disableOutputs();   
+  delay(1000);
+  turn90(true);
+  delay(2000);
+}
+
+void turn90(bool left){
+  int steps = left ? TURN_STEP_COUNT : -TURN_STEP_COUNT;
+  int dirSpeed = left ? navSpeed : -navSpeed;
+  leftMotor.setSpeed(0);
+  rightMotor.setSpeed(0);
+  leftMotor.move(steps);
+  rightMotor.move(-steps);
+  leftMotor.setSpeed(dirSpeed);
+  rightMotor.setSpeed(-dirSpeed);
+  while(leftMotor.distanceToGo() != 0 || rightMotor.distanceToGo() != 0){
+    leftMotor.runSpeedToPosition();
+    rightMotor.runSpeedToPosition();
+    delay(1);
   }
-  leftStepper.moveTo(stepCount);
-  rightStepper.moveTo(-stepCount);
-  leftStepper.setSpeed(moveSpeed);
-  rightStepper.setSpeed(moveSpeed);
-  leftStepper.runSpeedToPosition();
-  rightStepper.runSpeedToPosition();
-  //leftStepper.step(1);
-  //rightStepper.step(1);
-  //Serial.print("steps:");
-  //Serial.println(stepCount);
-  //stepCount++;
-  delay(10);
+  Serial.println("leaving turn90");
 }
